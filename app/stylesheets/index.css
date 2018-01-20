@@ -1,0 +1,44 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: white;
+  color: black;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Helvetica Neue', 'Helvetica', sans-serif;
+  font-size: 64px;
+  padding: 0 0.125em;
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 32px;
+  }
+}
+
+.app {
+  transform: translate(0, 0, 0);
+}
+
+.word {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.letter {
+  transition: transform 1s ease-in-out;
+}
