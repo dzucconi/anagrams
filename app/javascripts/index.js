@@ -113,6 +113,11 @@ export default () => {
     return state;
   };
 
-  step(STATE, TRANSFORMATIONS);
+  DOM.app.html(`
+    <div class='current'>
+      ${renderer.phrase(phrases[0])}
+    </div>
+  `);
+
   setInterval(() => step(STATE, TRANSFORMATIONS), period);
 };
