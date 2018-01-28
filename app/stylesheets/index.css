@@ -17,10 +17,10 @@ body {
 body {
   background-color: white;
   color: black;
-  -webkit-font-smoothing: antialiased;
   font-family: 'Helvetica Neue', 'Helvetica', sans-serif;
   font-size: 64px;
-  padding: 0 0.125em;
+  padding: 0.5em 0.66em;
+  line-height: 1.1;
 }
 
 @media (max-width: 640px) {
@@ -33,12 +33,36 @@ body {
   transform: translate(0, 0, 0);
 }
 
-.word {
+.phrase {
   position: absolute;
-  opacity: 0;
-  transition: opacity 1s;
+}
+
+.line {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.word {
+  display: flex;
+  flex-wrap: wrap;
+  transform: translateZ(0);
 }
 
 .letter {
-  transition: transform 1s ease-in-out;
+  transition-property: transform 1s ease-in-out, opacity 1s ease-in-out;
 }
+  .current .letter {
+    opacity: 1;
+  }
+
+  .next .letter {
+    opacity: 0;
+  }
+
+  .letter[data-state='adding'] {
+    opacity: 1;
+  }
+
+  .letter[data-state='removing'] {
+    opacity: 0;
+  }

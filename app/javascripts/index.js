@@ -1,90 +1,121 @@
 import $ from 'jquery';
+import { map, intersection, without, difference, partialRight, defer } from 'lodash';
 import parameters from 'queryparams';
 
+import render from './lib/render';
+
 window.parameters = parameters;
-
-let word = string => {
-  let letters = string.split('');
-
-  let frequencyMap = {};
-
-  let _word = letters.map(letter => {
-    let freq = frequencyMap[letter] = (frequencyMap[letter] || 0) + 1;
-    if (letter === ' ') return '<br>';
-    return `<span data-letter='${letter + freq}' class='letter'>${letter}</span>`
-  }).join('');
-
-
-  return `<div class='word'>
-    ${_word}
-  </div>`;
-};
+window.$ = $;
 
 export default () => {
-  const { lines } = parameters({
-    lines: ['britneyspears', 'presbyterians'],
+  const { phrases, font, period } = parameters({
+    period: 2500,
+    font: 'inherit',
+    phrases: [
+      'abcdef\nghijkl\nmnopqr\nstuvwx\nyz',
+      'ybcdef\nahijkl\ngnopqr\nmtuvwx\nsz',
+      'sbcdef\nyhijkl\nanopqr\ngtuvwx\nmz',
+      'mbcdef\nshijkl\nynopqr\natuvwx\ngz',
+      'gbcdef\nmhijkl\nsnopqr\nytuvwx\naz',
+    ],
   });
 
-  const $app = $('#app');
-
-  const transform = ($from, $to, i) => {
-    $from.css({ opacity: 1 });
-
-    // Gather positioning information
-    let params = $to
-      .find('.letter')
-      .map((i, el) => {
-        let $letter = $(el);
-        let letter = $letter.data('letter');
-
-        let $corresponding = $from.find(`[data-letter="${letter}"]`);
-
-        if ($corresponding.length) {
-
-          let { top, left } = $corresponding.offset();
-          let x = $letter.offset().left - left;
-          let y = $letter.offset().top - top;
-
-          return {
-            $el: $corresponding,
-            letter: letter,
-            top: top,
-            left: left,
-            x: x,
-            y: y,
-            to: `translate(${x}px, ${y}px)`
-          };
-        }
-      })
-      .get();
-
-    return () => {
-      // Apply transformation
-      $.map(params, ({ $el, top, left, to }) => {
-        $el.css({
-          position: 'absolute',
-          top: top,
-          left: left,
-          transform: to
-        });
-      });
-    };
+  const DOM = {
+    app: $('#app'),
   };
 
-  let $lines = lines.map(line => {
-    let $line = $(word(line));
-    $app.append($line)
-    return $line;
+  const STATE = {
+    i: -1,
+  };
+
+  DOM.app.css({ fontFamily: font });
+
+  const tokenize = word => {
+    const tokens = word.split('');
+    const frequencies = {};
+
+    return tokens.map(x => {
+      const frequency = (frequencies[x] = (frequencies[x] || 0) + 1);
+
+      return {
+        token: x,
+        frequency,
+        key: `${x}${frequency}`,
+      };
+    });
+  };
+
+  const take = partialRight(map, 'key');
+
+  const TRANSFORMATIONS = phrases.map((current, i) => {
+    const next = phrases[i + 1] || phrases[0];
+
+    const tokens = {
+      current: tokenize(current),
+      next: tokenize(next),
+    };
+
+    const moving = intersection(take(tokens.current), take(tokens.next));
+    const adding = without(take(tokens.next), ...take(tokens.current));
+    const removing = difference(take(tokens.current), take(tokens.next));
+
+    return { tokens, current, next, moving, adding, removing };
   });
 
-  let transformations = $lines.map(($el, i) => {
-    return transform($lines[0], $el, i);
-  });
+  const renderer = render({ period });
 
-  var i = 1;
-  transformations[0]();
-  setInterval(() => {
-    transformations[i]()
-    i = i + 1 < transformations.length ? i + 1 : 0;
-  }, 2000);
+  const step = (state, transformations) => {
+    const { i } = state;
+    state.i = i + 1 < transformations.length ? i + 1 : 0;
+
+    const { current, next, moving, adding, removing } = TRANSFORMATIONS[state.i];
+
+    const $current = $(`
+      <div class='current'>
+        ${renderer.phrase(current)}
+      </div>
+    `);
+
+    const $next = $(`
+      <div class='next'>
+        ${renderer.phrase(next)}
+      </div>
+    `);
+
+    DOM.app.html([
+      $current,
+      $next,
+    ]);
+
+    adding.forEach(key => {
+      defer(() => {
+        $next.find(`.letter[data-key='${key}']`)
+          .attr('data-state', 'adding');
+      });
+    });
+
+    removing.forEach(key => {
+      defer(() => {
+        $current.find(`.letter[data-key='${key}']`)
+          .attr('data-state', 'removing');
+      });
+    });
+
+    moving.forEach(key => {
+      if (key[0].match(/\s/)) return;
+
+      const $from = $current.find(`.letter[data-key='${key}']`);
+      const $to = $next.find(`.letter[data-key='${key}']`);
+
+      const x = $to.offset().left - $from.offset().left;
+      const y = $to.offset().top - $from.offset().top;
+
+      $from.css({ transform: `translate(${x}px, ${y}px)` });
+    });
+
+    return state;
+  };
+
+  step(STATE, TRANSFORMATIONS);
+  setInterval(() => step(STATE, TRANSFORMATIONS), period);
 };
