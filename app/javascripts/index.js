@@ -5,7 +5,6 @@ import parameters from 'queryparams';
 import render from './lib/render';
 
 window.parameters = parameters;
-window.$ = $;
 
 export default () => {
   const { phrases, font, period } = parameters({
