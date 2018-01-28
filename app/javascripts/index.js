@@ -86,30 +86,28 @@ export default () => {
       $next,
     ]);
 
-    adding.forEach(key => {
-      defer(() => {
+    defer(() => {
+      adding.forEach(key => {
         $next.find(`.letter[data-key='${key}']`)
           .attr('data-state', 'adding');
       });
-    });
 
-    removing.forEach(key => {
-      defer(() => {
+      removing.forEach(key => {
         $current.find(`.letter[data-key='${key}']`)
           .attr('data-state', 'removing');
       });
-    });
 
-    moving.forEach(key => {
-      if (key[0].match(/\s/)) return;
+      moving.forEach(key => {
+        if (key[0].match(/\s/)) return;
 
-      const $from = $current.find(`.letter[data-key='${key}']`);
-      const $to = $next.find(`.letter[data-key='${key}']`);
+        const $from = $current.find(`.letter[data-key='${key}']`);
+        const $to = $next.find(`.letter[data-key='${key}']`);
 
-      const x = $to.offset().left - $from.offset().left;
-      const y = $to.offset().top - $from.offset().top;
+        const x = $to.offset().left - $from.offset().left;
+        const y = $to.offset().top - $from.offset().top;
 
-      $from.css({ transform: `translate(${x}px, ${y}px)` });
+        $from.css({ transform: `translate(${x}px, ${y}px)` });
+      });
     });
 
     return state;
