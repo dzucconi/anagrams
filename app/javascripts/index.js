@@ -7,9 +7,11 @@ import render from './lib/render';
 window.parameters = parameters;
 
 export default () => {
-  const { phrases, font, period } = parameters({
+  const CONFIG = parameters({
     period: 2500,
-    font: 'inherit',
+    fontFamily: 'inherit',
+    backgroundColor: 'white',
+    color: 'black',
     phrases: [
       'abcdef\nghijkl\nmnopqr\nstuvwx\nyz',
       'ybcdef\nahijkl\ngnopqr\nmtuvwx\nsz',
@@ -20,6 +22,7 @@ export default () => {
   });
 
   const DOM = {
+    body: $('body'),
     app: $('#app'),
   };
 
@@ -27,7 +30,14 @@ export default () => {
     i: -1,
   };
 
-  DOM.app.css({ fontFamily: font });
+  DOM.body.css({
+    backgroundColor: CONFIG.backgroundColor,
+    color: CONFIG.color,
+  });
+
+  DOM.app.css({
+    fontFamily: CONFIG.fontFamily,
+  });
 
   const tokenize = word => {
     const tokens = word.split('');
@@ -46,8 +56,8 @@ export default () => {
 
   const take = partialRight(map, 'key');
 
-  const TRANSFORMATIONS = phrases.map((current, i) => {
-    const next = phrases[i + 1] || phrases[0];
+  const TRANSFORMATIONS = CONFIG.phrases.map((current, i) => {
+    const next = CONFIG.phrases[i + 1] || CONFIG.phrases[0];
 
     const tokens = {
       current: tokenize(current),
@@ -61,7 +71,7 @@ export default () => {
     return { tokens, current, next, moving, adding, removing };
   });
 
-  const renderer = render({ period });
+  const renderer = render({ period: CONFIG.period });
 
   const step = (state, transformations) => {
     const { i } = state;
@@ -115,9 +125,9 @@ export default () => {
 
   DOM.app.html(`
     <div class='current'>
-      ${renderer.phrase(phrases[0])}
+      ${renderer.phrase(CONFIG.phrases[0])}
     </div>
   `);
 
-  setInterval(() => step(STATE, TRANSFORMATIONS), period);
+  setInterval(() => step(STATE, TRANSFORMATIONS), CONFIG.period);
 };
