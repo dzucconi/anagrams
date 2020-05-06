@@ -19,12 +19,11 @@
 nbproject
 Thumbs.db
 
-# NPM packages folder.
+# NPM packages folder
 node_modules/
 
-# Brunch output folder.
-public/
+# Build artifacts
+dist/
 
 # Secrets
 .env
-.s3config

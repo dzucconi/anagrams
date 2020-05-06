@@ -17,7 +17,7 @@ body {
 body {
   background-color: white;
   color: black;
-  font-family: 'Helvetica Neue', 'Helvetica', sans-serif;
+  font-family: "Helvetica Neue", "Helvetica", sans-serif;
   font-size: 64px;
   padding: 0.5em 0.66em;
   line-height: 1.1;
@@ -51,18 +51,18 @@ body {
 .letter {
   transition-property: transform 1s ease-in-out, opacity 1s ease-in-out;
 }
-  .current .letter {
-    opacity: 1;
-  }
+.current .letter {
+  opacity: 1;
+}
 
-  .next .letter {
-    opacity: 0;
-  }
+.next .letter {
+  opacity: 0;
+}
 
-  .letter[data-state='adding'] {
-    opacity: 1;
-  }
+.letter[data-state="adding"] {
+  opacity: 1;
+}
 
-  .letter[data-state='removing'] {
-    opacity: 0;
-  }
+.letter[data-state="removing"] {
+  opacity: 0;
+}
