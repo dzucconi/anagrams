@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "jquery": "3.5.1",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "queryparams": "0.1.0"
   }
 }
