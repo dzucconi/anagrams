@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@types/jquery": "3.5.5",
-    "@types/lodash": "4.14.168",
+    "@types/lodash": "4.14.170",
     "parcel": "1.12.4",
     "typescript": "3.9.9"
   },
