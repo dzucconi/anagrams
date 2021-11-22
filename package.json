@@ -12,7 +12,7 @@
     "build": "parcel build src/index.html"
   },
   "devDependencies": {
-    "@types/jquery": "3.5.8",
+    "@types/jquery": "3.5.9",
     "@types/lodash": "4.14.177",
     "parcel": "1.12.4",
     "typescript": "3.9.10"
